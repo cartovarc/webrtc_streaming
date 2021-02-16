@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebRTC Streaming example</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-    <script src="https://webrtc-signaling-server-demo.herokuapp.com/webrtc_streaming.js"></script>
+    <script src="https://bluearas.cloud/webrtc_streaming.js"></script>
   </head>
   <body>
     <h3>https://github.com/Utring/webrtc_streaming</h3>
@@ -25,9 +25,10 @@
       function start() {
           let video_element = document.getElementById("video");
           let audio_element = document.getElementById("audio");
-          let url_signaling_server = "https://webrtc-signaling-server-demo.herokuapp.com";
+          let url_signaling_server = "https://bluearas.cloud";
+          let path = "/webrtc_socket";
           let secret_key = document.getElementById("secret_key").value;
-          webrtc_streaming.initialize(url_signaling_server, secret_key, true, video_element, audio_element);
+          webrtc_streaming.initialize(url_signaling_server, path, secret_key, true, video_element, audio_element);
           webrtc_streaming.start();
       }
 
