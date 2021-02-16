@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
     console.log(offer);
 
     socket.join(room_id);
-    io.to(room_id).emit("viewer_need_offer", {"viewer_id": socket.id, "offer": offer}); // TODO: emit only for streamer
+    io.to(room_id).emit("viewer_need_offer", { "viewer_id": socket.id, "offer": offer }); // TODO: emit only for streamer
   });
 
   socket.on("offer_to_viewer", (data) => {
@@ -46,6 +46,6 @@ io.on('connection', (socket) => {
     let offer = data["offer"];
     socket.broadcast.to(viewer_id).emit('offer', offer);
   });
-  
+
   socket.on('disconnect', () => console.log('Client disconnected'));
 });
