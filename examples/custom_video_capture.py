@@ -28,6 +28,7 @@ class MyOwnVideoCapture:
             255, size=(720, 1280, 3), dtype=np.uint8)
 
 
-start_streaming(signaling_server="https://webrtc-signaling-server-demo.herokuapp.com",
+start_streaming(signaling_server="https://bluearas.cloud",
+                path="webrtc_socket",
                 secret_key=secret_key,
                 video_capture=MyOwnVideoCapture())
