@@ -9,7 +9,8 @@ from av import VideoFrame
 
 async def _start_streaming(video_capture=None,
                            secret_key=None,
-                           signaling_server=None):
+                           signaling_server=None,
+                           path=None):
 
     class CV2Track(VideoStreamTrack):
         """
@@ -88,21 +89,24 @@ async def _start_streaming(video_capture=None,
     def disconnect():
         print('Disconnected from server')
 
-    await sio.connect(signaling_server)
+    await sio.connect(signaling_server, socketio_path=path)
     await sio.wait()
 
 
 def start_streaming(video_capture=None,
                     secret_key=None,
-                    signaling_server=None):
+                    signaling_server=None,
+                    path=None):
     assert secret_key is not None
     assert signaling_server is not None
+    assert path is not None
 
     loop = asyncio.get_event_loop()
     coro = asyncio.run(_start_streaming(
         video_capture=video_capture,
         secret_key=secret_key,
-        signaling_server=signaling_server))
+        signaling_server=signaling_server,
+        path=path))
 
     if loop.is_running():
         asyncio.run(coro)
