@@ -2,9 +2,10 @@
 class WebRTCStreaming {
     constructor () {}
 
-    initialize(url_signaling_server, secret_key, use_stun, video_element, audio_element) {
+    initialize(url_signaling_server, path, secret_key, use_stun, video_element, audio_element) {
         this.pc = null;
         this.url_signaling_server = url_signaling_server;
+        this.path = path;
         this.secret_key = secret_key;
         this.use_stun = use_stun;
         this.video_element = video_element;
@@ -38,7 +39,7 @@ class WebRTCStreaming {
             });
         }).then(function() {
             var offer = me.pc.localDescription;
-            let socket = io.connect(me.url_signaling_server);
+            let socket = io.connect(me.url_signaling_server, { path: me.path });
     
             socket.on("connect", () => {
                 socket.emit("join_room", {
