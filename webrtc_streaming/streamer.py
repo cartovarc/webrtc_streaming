@@ -8,6 +8,7 @@ from av import VideoFrame
 
 
 async def _start_streaming(video_capture=None,
+                           img_size=None,
                            secret_key=None,
                            signaling_server=None,
                            path=None):
@@ -17,21 +18,19 @@ async def _start_streaming(video_capture=None,
         A video stream that returns an cv2 track
         """
 
-        def __init__(self, video_capture):
+        def __init__(self):
             super().__init__()  # don't forget this!
             self.img = np.random.randint(
                 255, size=(720, 1280, 3), dtype=np.uint8)
 
-            if video_capture is None:
-                self.video_capture = cv2.VideoCapture(-1)
-            else:
-                self.video_capture = video_capture
-
         async def recv(self):
             pts, time_base = await self.next_timestamp()
-            ret, new_img = self.video_capture.read()
+            ret, new_img = video_capture.read()
             if ret is True and new_img is not None:
                 self.img = new_img
+            if img_size is not None:
+                self.img = cv2.resize(self.img, img_size,
+                                      interpolation=cv2.INTER_AREA)
             frame = VideoFrame.from_ndarray(self.img, format="bgr24")
             frame.pts = pts
             frame.time_base = time_base
@@ -66,7 +65,7 @@ async def _start_streaming(video_capture=None,
                 await pc.close()
                 pcs.discard(pc)
 
-        cv2_track = CV2Track(video_capture)
+        cv2_track = CV2Track()
 
         await pc.setRemoteDescription(offer)
 
@@ -94,9 +93,11 @@ async def _start_streaming(video_capture=None,
 
 
 def start_streaming(video_capture=None,
+                    img_size=None,
                     secret_key=None,
                     signaling_server=None,
                     path=None):
+    assert video_capture is not None
     assert secret_key is not None
     assert signaling_server is not None
     assert path is not None
@@ -104,6 +105,7 @@ def start_streaming(video_capture=None,
     loop = asyncio.get_event_loop()
     coro = asyncio.run(_start_streaming(
         video_capture=video_capture,
+        img_size=img_size,
         secret_key=secret_key,
         signaling_server=signaling_server,
         path=path))
