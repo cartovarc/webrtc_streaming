@@ -1,6 +1,9 @@
 import cv2
 import socketio
 import asyncio
+import time
+import signal
+import os
 import numpy as np
 from aiortc import RTCPeerConnection, RTCSessionDescription
 from aiortc import VideoStreamTrack
@@ -14,20 +17,31 @@ async def _start_streaming(video_capture=None,
                            path=None):
 
     class CV2Track(VideoStreamTrack):
+        MAX_SECONDS_WITHOUT_FRAMES = 30
         """
         A video stream that returns an cv2 track
         """
 
         def __init__(self):
-            super().__init__()  # don't forget this!
+            super().__init__()
+            self.time_last_frame = time.time()
             self.img = np.random.randint(
                 255, size=(720, 1280, 3), dtype=np.uint8)
+
+        def elapsed_without_frame(self):
+            elapsed = time.time() - self.time_last_frame
+            return elapsed
 
         async def recv(self):
             pts, time_base = await self.next_timestamp()
             ret, new_img = video_capture.read()
             if ret is True and new_img is not None:
                 self.img = new_img
+                self.time_last_frame = time.time()
+            else:
+                elapsed = self.elapsed_without_frame()
+                if elapsed > CV2Track.MAX_SECONDS_WITHOUT_FRAMES:
+                    os.kill(os.getpid(), signal.SIGKILL)
             if img_size is not None:
                 self.img = cv2.resize(self.img, img_size,
                                       interpolation=cv2.INTER_AREA)
@@ -88,8 +102,11 @@ async def _start_streaming(video_capture=None,
     def disconnect():
         print('Disconnected from server')
 
-    await sio.connect(signaling_server, socketio_path=path)
-    await sio.wait()
+    try:
+        await sio.connect(signaling_server, socketio_path=path)
+        await sio.wait()
+    except Exception:
+        os.kill(os.getpid(), signal.SIGKILL)
 
 
 def start_streaming(video_capture=None,

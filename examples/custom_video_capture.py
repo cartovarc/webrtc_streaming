@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from webrtc_streaming import start_streaming
 
 """
@@ -14,11 +15,14 @@ SECRET_KEY = "TEST_NOISE"
 
 class MyOwnVideoCapture:
     def __init__(self):
-        pass
+        self.start = time.time()
 
     def read(self):
-        return True, np.random.randint(
-            255, size=(720, 1280, 3), dtype=np.uint8)
+        if time.time() - self.start < 60:
+            return True, np.random.randint(
+                255, size=(720, 1280, 3), dtype=np.uint8)
+        else:
+            return False, None
 
 
 start_streaming(signaling_server="https://bluearas.cloud",
