@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 from webrtc_streaming import start_streaming
 
@@ -25,5 +24,5 @@ class MyOwnVideoCapture:
 start_streaming(signaling_server="https://bluearas.cloud",
                 path="webrtc_socket",
                 secret_key=SECRET_KEY,
-                video_capture=cv2.VideoCapture("tcp://192.168.100.203:11112"),
+                video_capture=MyOwnVideoCapture(),
                 img_size=(256, 144))

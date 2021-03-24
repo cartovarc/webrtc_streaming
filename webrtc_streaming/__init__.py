@@ -4,4 +4,4 @@ from webrtc_streaming.streamer import start_streaming  # noqa: F401
 
 __author__ = """Carlos Tovar"""
 __email__ = 'cartovarc@gmail.com'
-__version__ = '0.1.7'
+__version__ = '0.1.8'
